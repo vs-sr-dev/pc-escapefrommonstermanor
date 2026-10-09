@@ -15,7 +15,7 @@ is at the bottom. Read the top, not the history.
 | the window | **the first level plays** (the user, session 2): walking, the gun, the monsters, the music; the presses in `replays/attic-1.txt` replay it headless past field 6,000 |
 | known difference | the monsters' animation runs at twice the FZ-10's pace (Phoenix's too): the cel engine takes no guest time, so the level shows 60 frames a second where the console shows about 30 (`docs/04`) |
 | Phoenix | the title, the tombstone and the first level the same as the user's captures (RMS 3.8 to 5.6, the JPEG's; `docs/04`) |
-| the kit | **45a81b0** in every port (`docs/10`): the envelopes, GRAPHIX's font keyed by build, `pfcheck` for build 419; regressed on every port, committed and pushed with the user's word |
+| the kit | **42a44c2** in every port (`docs/10`; 45a81b0 then the README with this port in it): the envelopes, GRAPHIX's font keyed by build, `pfcheck` for build 419; regressed on every port, committed and pushed with the user's word |
 | this repository | **published** at the end of session 2 (vs-sr-dev/pc-escapefrommonstermanor), the user's word: the first level plays |
 
 ```sh

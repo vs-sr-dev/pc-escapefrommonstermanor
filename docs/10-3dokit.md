@@ -5,7 +5,7 @@
 Immercenary's port and grew on Crash 'n Burn's and Doctor Hauzer's; Escape
 from Monster Manor is its fourth game, and the first on Portfolio 21.10.
 Each entry is a 3dokit commit and what this game asked of it. The
-submodule was taken at **5d23270**; it is at **45a81b0**.
+submodule was taken at **5d23270**; it is at **42a44c2**.
 
 ## Session 1
 
@@ -100,3 +100,8 @@ tree):
 * **This disc**: self-test 0 failures (1,048 functions, 13,071 vectors);
   the boot's trace to 400,000 calls the same before and after the font
   change (no font call yet); the run past field 20,000.
+
+Then, with this repository published, **42a44c2**: the kit's README with
+this port among the ports (Portfolio 21.10, what it asked, the first level
+playable) and the cel engine's missing time among the known gaps; every
+port's submodule moved to it. The README only: nothing to build or run.
