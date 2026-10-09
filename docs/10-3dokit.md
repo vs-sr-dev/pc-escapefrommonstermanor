@@ -5,7 +5,7 @@
 Immercenary's port and grew on Crash 'n Burn's and Doctor Hauzer's; Escape
 from Monster Manor is its fourth game, and the first on Portfolio 21.10.
 Each entry is a 3dokit commit and what this game asked of it. The
-submodule was taken at **5d23270**; it is at **b1b7739**.
+submodule was taken at **5d23270**; it is at **45a81b0**.
 
 ## Session 1
 
@@ -71,3 +71,32 @@ working tree, with session 1's scratchpad scripts (`regbuild.sh`,
   engine, the allocator and every Graphics call `pfcheck` replays are
   untouched (a new slot and a new SWI only, which no other game calls:
   their traces above are the same).
+
+## Session 2
+
+One commit, **45a81b0**, made and pushed with the user's word; every
+port's submodule then moved to it (pc-crashnburn 4198294, PC-Immercenary
+00b73eb, pc-doctorhauzer 7c6e86c, all pushed; nothing moves in their
+traces). What it adds:
+
+| file | What |
+|---|---|
+| `runtime/pf_audio.cpp` | The audio folio's envelopes, AUDIOFOLIO 21.10's code (20.27's and 23.10's the same, 20.19's stops): `CreateEnvelope`, `DeleteEnvelope`, `AttachEnvelope`, `DetachEnvelope`; the envelope item (node type 6) and its tags; an attachment to an instrument's hook (`.incr`, `.request`, `.target`, `.current`); started by `StartInstrument`, stepped in chunks on the audio clock's timer list, released by `ReleaseInstrument`, stopped with the instrument's DSP side, deleted with it (`docs/04`). AUDIOFOLIO 21.10's own node database (a template 0x70). |
+| `runtime/pf_font.cpp` | GRAPHIX's font table keyed by version and build, the build from the image's build line; build 419's addresses (`docs/04`) |
+| `pfcheck.py` | `FontCall` for GRAPHIX 20.45 build 419 as well, the build picked by the folio's own words; the glue's stand-ins from each build's table (build 72's addresses were written in) |
+| `README.md` | the runtime's and `pfcheck`'s rows |
+
+Checked (session 1's scratchpad scripts, the new side from the working
+tree):
+
+* **The traces, byte for byte the same** as session 1's b1b7739 baseline,
+  after the envelopes and again after the font: Crash 'n Burn's two (529
+  and 124,396 lines), Immercenary's two (539,774 and 810,154), OMF2097's
+  (107), Doctor Hauzer's boot into its 3D rooms (893,210).
+* **`pfcheck` on GRAPHIX 20.45**: Doctor Hauzer's (build 72) start and
+  its calls 986 `ResetCurrentFont`, 987 `GetCurrentFont` (0x4E69E4 both)
+  and 988 `SetCurrentFontCCB`: 0 bytes differ; this disc's (build 419)
+  start: 0 bytes differ.
+* **This disc**: self-test 0 failures (1,048 functions, 13,071 vectors);
+  the boot's trace to 400,000 calls the same before and after the font
+  change (no font call yet); the run past field 20,000.

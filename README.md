@@ -31,6 +31,7 @@ the product are not.
 ## Layout
 
     docs/            what the kit reads on this disc, the OS version, the boot, the sessions
+    replays/         presses recorded in the window (pfboot --pad options), to replay
     3dokit/          game-agnostic 3DO toolkit (submodule)
     iso/, build/     your disc and everything derived from it (ignored by git)
 
@@ -91,6 +92,10 @@ build/recomp-build/selftest build/recomp/selftest/*.txt
 build/recomp-build/pfboot build/disc --boot --trace 1 --max-calls 300000 --pad a@9000x1
 build/recomp-build/pfboot build/disc --boot --trace 0 --max-calls 300000 --pad a@9000x1 \
   --frames build/frames --frames-at 0-10000/30
+
+# in a window, with the pad (arrows, Z X C, Enter); the user's first play replayed headless
+build/recomp-build/pfboot build/disc --boot --trace 0 --window --record build/play.txt
+build/recomp-build/pfboot build/disc --boot --trace 0 --max-calls 2000000 $(cat replays/attic-1.txt)
 ```
 
 ## Status
@@ -105,8 +110,17 @@ folio's code. `LaunchMe` recompiled whole (617 functions, no seeds), the
 self-test at 0 failures, and the first boot: the 3DO and EA logos, the
 title, the intro film over the graveyard, **the options tombstone**; with
 A, `Start Game` loads the first level, `Attic Simple`, and fades its 3D
-view in -- to call 196,030, `CreateEnvelope`: the audio folio's envelopes,
-the next session's work. See `TODO.md`.
+view in -- to call 196,030, `CreateEnvelope`.
+
+**Session 2**: the user's Phoenix captures of the title, the tombstone and
+the first level match the runtime's frames of the same moments; the audio
+folio's envelopes, read in AUDIOFOLIO 21.10 and put in the kit, and the
+level fades in with its music and runs on with no stop, past field
+20,000; GRAPHIX build 419's font addresses, checked on the folio's own
+code. **The first level plays in the window.** One difference from the
+console, its own and wanted: the monsters animate at twice the FZ-10's
+pace (and Phoenix's), the cel engine's time not yet charged -- next. See
+`TODO.md`.
 
 ## Documentation
 
@@ -116,6 +130,7 @@ the next session's work. See `TODO.md`.
 | [01-the-disc-on-the-kit](docs/01-the-disc-on-the-kit.md) | what 3dokit reads on this disc, and what it learnt from it |
 | [02-the-os-version](docs/02-the-os-version.md) | Portfolio 21.10: each image's version and build, GRAPHIX 20.45.419, OPERAMATH 21.10, GRAFMATH |
 | [03-the-first-boot](docs/03-the-first-boot.md) | the run to the menu and into the first level; the stops and what they asked |
+| [04-phoenix-envelopes-font](docs/04-phoenix-envelopes-font.md) | the runtime against Phoenix; the audio folio's envelopes; GRAPHIX build 419's font |
 | [10-3dokit](docs/10-3dokit.md) | what this port gave 3dokit |
 
 ## Licence

@@ -81,16 +81,13 @@ the width right - left + 1 in 12.20, VDY the height bottom - top + 1 in
 16.16, then `DrawCels`. The game sets its pen to 0x50a5 and fills, a
 hundred calls after its first `MulMat33Mat33_F16`.
 
-### 4. `CreateEnvelope` (audio -136, call 196,030): the next session
+### 4. `CreateEnvelope` (audio -136, call 196,030)
 
 `CreateEnvelope(points, 3, 1, 1)`: an envelope of three points with its
 sustain on the second, for the level's sound, right after the game
-connects an instrument's "Output" to another's "Amplitude". The audio
-folio's envelopes are not in the runtime: they are AUDIOFOLIO 21.10's
-own (`CreateEnvelope`, `AttachEnvelope`, `DetachEnvelope`,
-`DeleteEnvelope`, and the folio's envelope service that moves an
-`envelope.dsp` instrument's knobs over time), to be read in this disc's
-folio (`TODO.md`).
+connects an instrument's "Output" to another's "Amplitude". Answered in
+session 2 from AUDIOFOLIO 21.10's own code (`04-phoenix-envelopes-font.md`):
+the run now goes on through the level.
 
 ## Speed
 

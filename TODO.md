@@ -11,20 +11,23 @@ is at the bottom. Read the top, not the history.
 | the OS | Portfolio 21.10: kernel and Operator 21.10, File folio 21.11, GRAPHIX 20.45.419, AUDIOFOLIO 21.10.433, OPERAMATH 21.10.603, GRAFMATH 21.10.504 (`docs/02`) |
 | `LaunchMe` recompiled | 617 functions, 28,505 instructions, no seeds; self-test 0 failures |
 | `pfboot build/disc --boot` | the 3DO and EA logos, the title, the intro, **the options tombstone** (field 8,640), waiting for the pad |
-| `... --pad a@9000x1` | Start Game: the first level, `Attic Simple`, loaded and fading in |
-| the stop | call **196,030**, audio -136 `CreateEnvelope` |
-| the kit | **b1b7739** in every port (`docs/10`): discovery's pointed leaves, `MulMat33Mat33_F16`, `FillRect`, CCBPRE clear in the file readers, streams with no header; regressed on every port, committed and pushed |
-| this repository | committed locally, not published (until the game "works until shown otherwise") |
+| `... --pad a@9000x1` | Start Game: the first level, `Attic Simple`, faded in, its music coming in through the envelope; **no stop**: 1,500,000 calls reach past field 20,000 (`docs/04`) |
+| the window | **the first level plays** (the user, session 2): walking, the gun, the monsters, the music; the presses in `replays/attic-1.txt` replay it headless past field 6,000 |
+| known difference | the monsters' animation runs at twice the FZ-10's pace (Phoenix's too): the cel engine takes no guest time, so the level shows 60 frames a second where the console shows about 30 (`docs/04`) |
+| Phoenix | the title, the tombstone and the first level the same as the user's captures (RMS 3.8 to 5.6, the JPEG's; `docs/04`) |
+| the kit | **45a81b0** in every port (`docs/10`): the envelopes, GRAPHIX's font keyed by build, `pfcheck` for build 419; regressed on every port, committed and pushed with the user's word |
+| this repository | **published** at the end of session 2 (vs-sr-dev/pc-escapefrommonstermanor), the user's word: the first level plays |
 
 ```sh
 # from D:/Homebrew6 whenever the kit has uncommitted work (the build's TDK_RUNTIME is then the kit's);
-# the build/recomp of session 1 points at D:/Homebrew6/3dokit/runtime, now at b1b7739 too
+# the build/recomp points at D:/Homebrew6/3dokit/runtime, the kit's working tree
 cd D:/Homebrew6 && PYTHONIOENCODING=utf-8 python -m 3dokit.recomp --out pc-escapefrommonstermanor/build/recomp \
   --optest "launchme=pc-escapefrommonstermanor/build/disc/LaunchMe"
 export PATH=/c/msys64/mingw64/bin:$PATH                 # for cmake/ninja/clang only
 cmake -S build/recomp -B build/recomp-build -G Ninja -DCMAKE_CXX_COMPILER=clang++ && ninja -C build/recomp-build
 build/recomp-build/selftest build/recomp/selftest/*.txt
-build/recomp-build/pfboot build/disc --boot --trace 1 --max-calls 300000 --pad a@9000x1 | tail   # 9 s
+build/recomp-build/pfboot build/disc --boot --trace 1 --max-calls 400000 --pad a@9000x1 > build/t400k.txt   # 28 s
+build/recomp-build/pfboot build/disc --boot --max-calls 1500000 --pad a@9000x1 --frames DIR --frames-at 9300-20000/50
 ```
 
 Session 1's scratchpad (`2040b407-.../scratchpad`): `build.sh [--selftest]`
@@ -33,63 +36,65 @@ Session 1's scratchpad (`2040b407-.../scratchpad`): `build.sh [--selftest]`
 over the 17 programs of the five discs), `newfuncs.py`, `whopoints.py`
 (the functions one discovery has and another not, and who points at
 them), `regbuild.sh VARIANT KITPARENT` and `regrun.sh VARIANT` (the other
-ports' builds and their traces; `reg/out-old` is 5d23270's baseline, and
-Doctor Hauzer's boot is in it), `readers.sh KITPARENT OUT` (cel, stream
-and the Python/C check over the five discs), `syscmp.py` (System files
-shared between discs), `odis.py`, `gvec.py` (from Doctor Hauzer's session
-1), `sheet.py`, and `rt-inst/` + `mm-inst/` (a runtime instrumented to time
-the cel engine; scratch only).
+ports' builds and their traces; `reg/out-new` is b1b7739's baseline,
+`reg/out-s3` the same from session 2's final tree), `readers.sh KITPARENT
+OUT` (cel, stream and the Python/C check over the five discs), `syscmp.py`
+(System files shared between discs), `odis.py`, `gvec.py`, `sheet.py`.
+
+Session 2's scratchpad (`83783851-.../scratchpad`): `af2110.dis`,
+`af_cnb.dis`, `af_dh.dis`, `af_im.dis` (the four AUDIOFOLIOs disassembled
+whole: 21.10, 20.19, 20.27, 23.10), `norm.py FILE FROM TO` (a region's
+instructions with addresses and constants put aside, for `diff` across
+versions), `norm2.py` (the same keeping field offsets), `g72.dis` and
+`g419.dis` (the two GRAPHIX builds' font code), the snapshots `snap419`,
+`dh986` to `dh988` for `pfcheck`, and `h/` (the level's frames).
 
 ## The work, in order
 
-### 1. Phoenix: the user's screenshots first
+### 1. The cel engine's time (the kit)
 
-The user starts the next session after taking Phoenix screenshots (in
-`D:\Tools\phoenix28\ph-win64\3DO`, named by the date as for the other
-ports): the 3DO and EA logos, the title, the intro, the options
-tombstone, and the first level. Compare them with the runtime's frames
-(`--frames`, the same moments: the tombstone at field 8,640, the level
-after `--pad a@9000x1`) before anything else -- colours, positions, the
-fades. A difference is a question first (the original's own glitches
-exist: pc-crashnburn's radar), not a runtime bug by default.
+The monsters animate at twice the console's pace (`docs/04`): the runtime
+charges the ARM60's clocks but not MADAM's work, so the level shows a
+frame every field where the FZ-10 shows one every two. **The user's
+choice (session 2): put it in** -- the developers' pace, and a point of
+fidelity Phoenix does not have. It is the second game that shows it
+(Total Eclipse's preview on Crash 'n Burn's disc, pc-crashnburn's
+`docs/08-oracle.md`), so it is the kit's work: charge `DrawCels` the
+cel engine's time (per cel and per pixel drawn, the bus it shares with the
+CPU), from the hardware's documents and measured against the FZ-10 (the
+user's eye now; a count of frames in a capture of the same moment would
+be better). It moves every port's traces: each is to be checked against
+its console, Crash 'n Burn's race start above all (the FZ-10 drops frames
+there, the runtime does not).
 
-### 2. The envelopes (call 196,030)
+### 2. The first level, played
 
-`CreateEnvelope(points, 3, 1, 1)` after `ConnectInstruments(37 "Output" ->
-556 "Amplitude")`. Read AUDIOFOLIO 21.10.433 (`build/os/audiofolio.bin`,
-its vectors: `CreateEnvelope` -136, `DeleteEnvelope` -140, `AttachEnvelope`
--128, `DetachEnvelope` -132) -- the envelope's item, its points
-(`DataTimePair`s), its attachment to an instrument's knob or envelope hook,
-and the folio's envelope service that moves the knob over time (on the
-audio clock, as the cues are) -- and Crash 'n Burn's 20.19 and Immercenary's
-23.10 for the version differences. Then `PauseInstrument` and
-`ResumeInstrument` are in the glue too.
+The level now runs on its own with no stop. Next, in the window
+(`--window`): the pad (walk, turn, the gun), the map (`FillRect`,
+`DrawTo`), the monsters' cels, the sound; record the presses (`--record`)
+and replay them to guard later changes; compare with Phoenix while
+playing (the user's captures of the same moments). Any font call
+(`ResetCurrentFont`, `DrawText16`, `DrawChar` are in the glue) runs on
+build 419's addresses now: check its first snapshot with `pfcheck
+--graphix` as Doctor Hauzer's were. The envelope calls not done stop with
+"not yet" (`StartAttachment` and the rest on an envelope's attachment,
+`LinkAttachments` on one, `AF_TAG_TIME_SCALE`): read them in 21.10 when
+reached.
 
-### 3. GRAPHIX 20.45 is two folios
+### 3. The save
 
-`pf_font.cpp`'s `kFonts` keys GRAPHIX's font addresses by version, read on
-Doctor Hauzer's build 72; this disc's build 419 has the same version and
-other addresses (`docs/02`). Before this game reaches a font call
-(`ResetCurrentFont`, `DrawText16`, `DrawChar` are in its glue): key the
-table by build (the unpacked image's length, 33,384 against 34,700, or its
-build line) and read 419's own addresses. Look for other places that key
-a folio's addresses by version alone (`pf_err.cpp` keys the kernel's).
+`startopera` runs `$c/lmadm -a ram 3 0 nvram`; the game has a "Save
+game" screen and `CreateFile` in its glue. Recompile the disc's LMADM
+21.10 and FORMAT (as Doctor Hauzer does), and read File folio 21.11's
+linked-memory filesystem against 20.30's (`pf_file.cpp`).
 
 ### 4. On from there
 
-* The first level in 3D, played: the window (`--window`), the pad, the
-  gun, the map (`FillRect`, `DrawTo`), the monsters' cels; compare with
-  Phoenix (the user's screenshots: the 3DO logo, the title, the tombstone,
-  the attic).
-* The save: `startopera` runs `$c/lmadm -a ram 3 0 nvram`; the game has a
-  "Save game" screen and `CreateFile` in its glue. Recompile the disc's
-  LMADM 21.10 and FORMAT (as Doctor Hauzer does), and read File folio
-  21.11's linked-memory filesystem against 20.30's (`pf_file.cpp`).
+* The speed of the 3D level on the host, measured in the window against
+  the console's 60 fields; the cel engine's per-pixel path is the place to
+  look if it falls behind (the menu: about 375 frames a second, `docs/03`).
 * GRAFMATH 21.10.504: `startopera` starts it; `LaunchMe` does not open it
   so far.
-* The speed of the 3D levels (the menu: about 375 frames a second on the
-  host, `docs/03`); the cel engine's per-pixel path is the place to look
-  if a level falls behind the console.
 
 ## Answered
 
@@ -97,11 +102,18 @@ a folio's addresses by version alone (`pf_err.cpp` keys the kernel's).
   pushed, every port's submodule moved and pushed.
 * (Session 1) This repository: committed locally only; published once the
   game "works until shown otherwise", as the other ports were.
-* (Session 1) Phoenix screenshots: the user takes them before session 2.
+* (Session 2) Phoenix: the title, the tombstone and the first level are
+  the runtime's (`docs/04`); no difference to ask about.
+* (Session 2) The kit's commit (45a81b0), every port moved; this
+  repository published: the user's word, after playing the level.
+* (Session 2) The monsters' double pace: the console's own (FZ-10 checked
+  by the user); to be put in, through the cel engine's time.
 
 ## Questions for the user
 
-* None open.
+* For the cel engine's time: can the FZ-10 give a count to measure against
+  (a capture of the level at a known moment, the frames a second it
+  shows)?
 
 ## Keep in mind
 
@@ -153,3 +165,27 @@ a folio's addresses by version alone (`pf_err.cpp` keys the kernel's).
   Hauzer (traces and boots byte for byte, self-tests, the readers byte for
   byte); committed as b1b7739 and pushed with the user's word, every
   port's submodule moved (`docs/10`). This repository committed locally.
+
+## Session 2 (2026-10-09) -- Phoenix, the envelopes, GRAPHIX build 419
+
+* **Phoenix** (`docs/04`): the user's three captures (the title, the
+  tombstone, the first level after A) against the runtime's frames of the
+  same moments: RMS 3.8, 5.6 and 3.9, the mean differences under 1 --
+  the same picture. Nothing to ask.
+* **The envelopes** (`docs/04`): AUDIOFOLIO 21.10's envelope code read
+  whole and compared with 20.19, 20.27 and 23.10 (21.10 = 23.10; 20.27
+  the same but one minimum; 20.19 another version); in the kit: the item,
+  the attachment to the hook, start, the chunks on the timer list,
+  release, stop, deletions, the four vectors; 21.10's node database. The
+  level fades in with its music and runs on, past field 20,000.
+* **GRAPHIX build 419** (`docs/04`): the font table keyed by build, 419's
+  addresses read from its code, checked with `pfcheck --font-start` (0
+  bytes differ; `pfcheck` given build 419 too); the other version-keyed
+  tables looked at.
+* **The kit**: every port's traces byte for byte the same, twice;
+  committed as 45a81b0 and pushed with the user's word, every port's
+  submodule moved (`docs/10`).
+* **The window**: the user played the first level; the presses kept in
+  `replays/attic-1.txt`. The monsters animate at twice the FZ-10's pace
+  (and Phoenix's): the cel engine's missing time, next.
+* **The repository** published on GitHub.
